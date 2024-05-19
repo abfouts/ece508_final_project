@@ -30,6 +30,7 @@ class Plot(Canvas):
         super().__init__(*args, **kwargs)
         self.balance = balance
         self.transactions = transactions
+        self.configure(bg="#adbce6")
 
         # Create a matplotlib figure1
         self.balance_df = pd.DataFrame(self.balance)
@@ -46,6 +47,7 @@ class Plot(Canvas):
                      self.balance_df["balance"])
         # Add a title to the plot
         self.ax1.set_title("Balance")
+        self.ax1.set_facecolor('#cfcfcf')
 
         # Create a matplotlib figure2
         self.transactions_df = pd.DataFrame(self.transactions)
@@ -56,12 +58,13 @@ class Plot(Canvas):
         # Plot the data
         self.line2 = FigureCanvasTkAgg(self.figure2, self)
         # Add the toolbar
-        self.line2.get_tk_widget().pack(side=tk.RIGHT, fill=tk.BOTH)
+        self.line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         # Group the data by date
         self.ax2.plot(self.transactions_df["amount"],
                       self.transactions_df["item"])
         # Add a title to the plot
         self.ax2.set_title("Transactions")
+        self.ax2.set_facecolor('#cfcfcf')
 
 
 class Buttons(Button):
@@ -160,6 +163,7 @@ class Application(tk.Tk):
         self.title("Budget Spreadsheet Tracker")
         self.geometry("1280x640")
         self.resizable(True, True)
+        self.configure(bg='#add8e6')
 
         # Create the application's label
         Label(
@@ -186,7 +190,7 @@ class Application(tk.Tk):
         """Get the data for the chart."""
         balance_per_month = {
             "balance": [1000, 2000, 3000, 4000],
-            "day_of_the_month": [1, 2, 3, 4],
+            "day_of_the_month": ["1st", "2nd", "3rd", "4th"],
         }
 
         return balance_per_month
