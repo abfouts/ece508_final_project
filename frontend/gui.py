@@ -49,6 +49,27 @@ class Backend:
         """Add a new transaction."""
         print("Add a new transaction.")
 
+    @staticmethod
+    def get_balance_per_day():
+        """Get the data for the chart."""
+        balance_per_month = {
+            "balance": [1000, 2000, 3000, 4000],
+            "day_of_the_month": ["1st", "2nd", "3rd", "4th"],
+        }
+
+        return balance_per_month
+
+    @staticmethod
+    def get_transactions():
+        """Get the data for the chart."""
+        transactions_per_day = {
+            "item": ["item1", "item2", "item3", "item4"],
+            "amount": [100, 200, 300, 400],
+        }
+
+        return transactions_per_day
+
+
 
 class Plot(Canvas):
     """Chart class."""
@@ -184,8 +205,8 @@ class Application(tk.Tk):
         ).grid(row=0)
 
         # Chart
-        self.balance_per_day = self.get_balance_per_day()
-        self.highest_transactions = self.get_transactions()
+        self.balance_per_day = Backend.get_balance_per_day()
+        self.highest_transactions = Backend.get_transactions()
 
         chart = Plot(self.balance_per_day, self.highest_transactions)
         chart.grid(row=0, sticky="NSEW")
@@ -196,24 +217,6 @@ class Application(tk.Tk):
         buttons.columnconfigure(2, weight=1)
         buttons.rowconfigure(2, weight=1)
 
-    # Function to fetch the data for the chart
-    def get_balance_per_day(self):
-        """Get the data for the chart."""
-        balance_per_month = {
-            "balance": [1000, 2000, 3000, 4000],
-            "day_of_the_month": ["1st", "2nd", "3rd", "4th"],
-        }
-
-        return balance_per_month
-
-    def get_transactions(self):
-        """Get the data for the chart."""
-        transactions_per_day = {
-            "item": ["item1", "item2", "item3", "item4"],
-            "amount": [100, 200, 300, 400],
-        }
-
-        return transactions_per_day
 
 
 if __name__ == "__main__":
