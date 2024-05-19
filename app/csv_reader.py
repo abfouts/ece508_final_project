@@ -25,6 +25,7 @@ class CSVReader:
         self.csv_dict = {}
         self.file_dir = Path(__file__).parent
         self.path_to_csv = path_to_csv
+        self.balance_per_day = {}
 
     # Provide the path to the csv
     def read_csv(self):
@@ -35,32 +36,49 @@ class CSVReader:
                                             'credit_card_statement.csv')
 
         self.csv_contents = pd.read_csv(self.path_to_csv,
+                                        header=0,
                                         names=[
-                                            'Card_Number',
-                                            'Transaction_Date',
-                                            'Amount',
-                                            'Reference_Number',
-                                            'Country',
-                                            'Address',
-                                            'Discription'
+                                            'card_number',
+                                            'date',
+                                            'amount',
+                                            'reference_number',
+                                            'country',
+                                            'address',
+                                            'discription'
                                             ])
         return self.csv_contents
 
     def get_csv_dict(self):
         """ Returns the csv dictionary """
         self.read_csv()
-        self.csv_dict = {
-            'Card_Number': self.csv_contents['Card_Number'],
-            'Transaction_Date': self.csv_contents['Transaction_Date'],
-            'Amount': self.csv_contents['Amount'],
-            'Reference_Number': self.csv_contents['Reference_Number'],
-            'Country': self.csv_contents['Country'],
-            'Address': self.csv_contents['Address'],
-            'Discription': self.csv_contents['Discription']
-        }
+        self.csv_dict = self.csv_contents.to_dict()
         return self.csv_dict
 
+    def get_balance_per_day(self):
+        """ Returns the balance per day """
+        # Read the csv and group by date
+        self.read_csv()
+        # List to store the balance for each day
+        balance = []
+        # List to store the date of the month
+        day_of_the_month = []
+        # Attribute to hold the 2 lists which we will use
+        self.balance_per_day = {}
+        # Iterate through the unique dates
+        for date in self.csv_contents['date'].unique():
+            # Filter the dataframe by the date
+            tempdf = self.csv_contents[self.csv_contents['date'] == date]
 
-reader = CSVReader("")
-data_dict = reader.get_csv_dict()
-print(data_dict)
+            # Sum the amount column and round to 2 decimal places
+            # Append the balance to the list
+            balance.append(round(tempdf['amount'].sum(), 2))
+            # Append the date to the list
+            day_of_the_month.append(date)
+
+        # Create a dictionary with the date and balance
+        self.balance_per_day = {
+            "date": day_of_the_month,
+            "balance": balance
+        }
+        # Return the dictionary
+        return self.balance_per_day

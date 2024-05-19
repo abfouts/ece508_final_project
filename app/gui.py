@@ -32,7 +32,8 @@ class Backend:
         """Initialize the backend."""
         self.csv_path = csv_path
         self.csv_reader = my_csv_reader.CSVReader(self.csv_path)
-        self.csv_dict = self.csv_reader.get_csv_dict()
+        # self.csv_dict = self.csv_reader.get_csv_dict()
+        self.csv_balance_per_day = self.csv_reader.get_balance_per_day()
 
     def upload_csv_file(self):
         """Upload a CSV file."""
@@ -53,13 +54,9 @@ class Backend:
 
     def get_balance_per_day(self):
         """Get the data for the chart."""
-        balance_per_month = {
-            "Transaction_Date": self.csv_dict["Transaction_Date"],
-            "Amount": self.csv_dict["Amount"]
+        self.csv_balance_per_day = self.csv_reader.get_balance_per_day()
 
-        }
-
-        return balance_per_month
+        return self.csv_balance_per_day
 
     def get_transactions(self):
         """Get the data for the chart."""
@@ -99,7 +96,7 @@ class Plot(Canvas):
         # Add the toolbar
         self.bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         # Group the data by category
-        self.ax1.bar(self.balance_df["day_of_the_month"],
+        self.ax1.bar(self.balance_df["date"],
                      self.balance_df["balance"])
         # Add a title to the plot
         self.ax1.set_title("Balance")
@@ -116,10 +113,10 @@ class Plot(Canvas):
         # Add the toolbar
         self.line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         # Group the data by date
-        self.ax2.plot(self.transactions_df["amount"],
-                      self.transactions_df["item"])
+        self.ax2.plot(self.balance_df["date"],
+                      self.balance_df["balance"])
         # Add a title to the plot
-        self.ax2.set_title("Transactions")
+        self.ax2.set_title("Balance in Dollars")
         self.ax2.set_facecolor('#cfcfcf')
 
 

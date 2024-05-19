@@ -6,6 +6,7 @@ The script saves the generated data to a CSV file.
 """
 
 import random
+
 from numpy import int64
 import pandas as pd
 
@@ -21,23 +22,24 @@ NUM_TRANSACTIONS = 1000
 data = {
     # Fake credit card number, transaction date, details, amount,
     # reference number, country, address, description
-    "Card_Number": [int64(fake.credit_card_number())
+    "card_number": [int64(fake.credit_card_number())
                     for _ in range(NUM_TRANSACTIONS)],
-    "Transaction_Date": [
+    "date": [
         fake.date_between(start_date="-30d", end_date="today")
         for _ in range(NUM_TRANSACTIONS)
     ],
-    "Amount": [
-        round(float(random.uniform(-10000, 10000)),
+    "amount": [
+        round(float(random.uniform(-1000, 10000)),
               2) for _ in range(NUM_TRANSACTIONS)
     ],
-    "Reference_Number": [int64(fake.aba())
+    "reference_number": [int64(fake.aba())
                          for _ in range(NUM_TRANSACTIONS)],
-    "Country": [fake.country().rstrip(',')
+    "country": [fake.country().rstrip(',').strip()
                 for _ in range(NUM_TRANSACTIONS)],
-    "Address": [fake.street_address().rstrip(',')
+    "address": [fake.street_address().rstrip(',').strip()
                 for _ in range(NUM_TRANSACTIONS)],
-    "Discription": [fake.bs().rstrip(',') for _ in range(NUM_TRANSACTIONS)],
+    "discription": [fake.bs().rstrip(',').strip()
+                    for _ in range(NUM_TRANSACTIONS)],
 }
 
 
