@@ -14,12 +14,13 @@ https://docs.python.org/3/library/tkinter.html
 
 # Import the necessary modules
 import tkinter as tk
-from tkinter import Button, Label, Canvas
+from tkinter import Button, Label, Canvas, filedialog
 import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import csv_reader as my_csv_reader
+import os
 
 matplotlib.use("TkAgg")
 
@@ -36,6 +37,7 @@ class Backend:
     def upload_csv_file(self):
         """Upload a CSV file."""
         print("Upload a CSV file.")
+        path_to_csv = filedialog.askopenfilename(initialdir = os.getcwd())
 
     def reset(self):
         """Reset the application."""
