@@ -19,7 +19,7 @@ import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
-import csv_reader as csv_reader
+import csv_reader as my_csv_reader
 
 matplotlib.use("TkAgg")
 
@@ -30,7 +30,7 @@ class Backend:
     def __init__(self, csv_path):
         """Initialize the backend."""
         self.csv_path = csv_path
-        self.csv_reader = csv_reader.CSVReader(self.csv_path)
+        self.csv_reader = my_csv_reader.CSVReader(self.csv_path)
         self.csv_dict = self.csv_reader.get_csv_dict()
 
     def upload_csv_file(self):
