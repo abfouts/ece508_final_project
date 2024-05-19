@@ -19,6 +19,7 @@ import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
+import csv_reader as csv_reader
 
 matplotlib.use("TkAgg")
 
@@ -26,41 +27,39 @@ matplotlib.use("TkAgg")
 class Backend:
     """Backend class."""
 
-    def __init__(self):
-        pass
+    def __init__(self, csv_path):
+        """Initialize the backend."""
+        self.csv_path = csv_path
+        self.csv_reader = csv_reader.CSVReader(self.csv_path)
+        self.csv_dict = self.csv_reader.get_csv_dict()
 
-    @staticmethod
-    def upload_csv_file():
+    def upload_csv_file(self):
         """Upload a CSV file."""
         print("Upload a CSV file.")
 
-    @staticmethod
-    def reset():
+    def reset(self):
         """Reset the application."""
         print("Reset the application.")
 
-    @staticmethod
-    def generate_report():
+    def generate_report(self):
         """Generate a report."""
         print("Generate a report.")
 
-    @staticmethod
-    def add_new_transaction():
+    def add_new_transaction(self):
         """Add a new transaction."""
         print("Add a new transaction.")
 
-    @staticmethod
-    def get_balance_per_day():
+    def get_balance_per_day(self):
         """Get the data for the chart."""
         balance_per_month = {
-            "balance": [1000, 2000, 3000, 4000],
-            "day_of_the_month": ["1st", "2nd", "3rd", "4th"],
+            "Transaction_Date": self.csv_dict["Transaction_Date"],
+            "Amount": self.csv_dict["Amount"]
+
         }
 
         return balance_per_month
 
-    @staticmethod
-    def get_transactions():
+    def get_transactions(self):
         """Get the data for the chart."""
         transactions_per_day = {
             "item": ["item1", "item2", "item3", "item4"],
@@ -69,6 +68,9 @@ class Backend:
 
         return transactions_per_day
 
+    def update_csv_path(self, new_path):
+        """Update the CSV path."""
+        self.csv_path = new_path
 
 
 class Plot(Canvas):
@@ -76,8 +78,12 @@ class Plot(Canvas):
 
     def __init__(self, balance, transactions, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Balance array
         self.balance = balance
+        # Transactions array
         self.transactions = transactions
+        # Configure the background color
         self.configure(bg="#adbce6")
 
         # Create a matplotlib figure1
@@ -120,12 +126,15 @@ class Buttons(Button):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Empty string means default path
+        self.csv_path = ""
+        self.backend = Backend(self.csv_path)
 
         # Upload a csv file button
         self.upload_csv_button = Button(
             self,
             text="Upload CSV File",
-            command=Backend.upload_csv_file,
+            command=self.backend.upload_csv_file,
             width=30,
             activebackground="#ffdf4f",
             bg="#e2ff00",
@@ -142,7 +151,7 @@ class Buttons(Button):
         self.reset_button = Button(
             self,
             text="Reset",
-            command=Backend.reset,
+            command=self.backend.reset,
             width=30,
             bg="#ff0000",
             activebackground="#e23a08",
@@ -158,7 +167,7 @@ class Buttons(Button):
         self.generate_report_button = Button(
             self,
             text="Generate Report",
-            command=Backend.generate_report,
+            command=self.backend.generate_report,
             width=30,
             bg="#23a08e",
             activebackground="#a3ffb4",
@@ -173,7 +182,7 @@ class Buttons(Button):
         self.add_new_transaction_button = Button(
             self,
             text="Add New Transaction",
-            command=Backend.add_new_transaction,
+            command=self.backend.add_new_transaction,
             width=30,
             bg="#6e57d2",
             activebackground="#7a49a5",
@@ -196,6 +205,8 @@ class Application(tk.Tk):
         self.geometry("1280x640")
         self.resizable(True, True)
         self.configure(bg='#add8e6')
+        # Empty means we will use the default path
+        self.backend = Backend('')
 
         # Create the application's label
         Label(
@@ -205,8 +216,8 @@ class Application(tk.Tk):
         ).grid(row=0)
 
         # Chart
-        self.balance_per_day = Backend.get_balance_per_day()
-        self.highest_transactions = Backend.get_transactions()
+        self.balance_per_day = self.backend.get_balance_per_day()
+        self.highest_transactions = self.backend.get_transactions()
 
         chart = Plot(self.balance_per_day, self.highest_transactions)
         chart.grid(row=0, sticky="NSEW")
