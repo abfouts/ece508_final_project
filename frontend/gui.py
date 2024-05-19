@@ -23,6 +23,33 @@ import pandas as pd
 matplotlib.use("TkAgg")
 
 
+class Backend:
+    """Backend class."""
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def upload_csv_file():
+        """Upload a CSV file."""
+        print("Upload a CSV file.")
+
+    @staticmethod
+    def reset():
+        """Reset the application."""
+        print("Reset the application.")
+
+    @staticmethod
+    def generate_report():
+        """Generate a report."""
+        print("Generate a report.")
+
+    @staticmethod
+    def add_new_transaction():
+        """Add a new transaction."""
+        print("Add a new transaction.")
+
+
 class Plot(Canvas):
     """Chart class."""
 
@@ -77,7 +104,7 @@ class Buttons(Button):
         self.upload_csv_button = Button(
             self,
             text="Upload CSV File",
-            command=self.upload_csv_file,
+            command=Backend.upload_csv_file,
             width=30,
             activebackground="#ffdf4f",
             bg="#e2ff00",
@@ -94,7 +121,7 @@ class Buttons(Button):
         self.reset_button = Button(
             self,
             text="Reset",
-            command=self.reset,
+            command=Backend.reset,
             width=30,
             bg="#ff0000",
             activebackground="#e23a08",
@@ -110,7 +137,7 @@ class Buttons(Button):
         self.generate_report_button = Button(
             self,
             text="Generate Report",
-            command=self.generate_report,
+            command=Backend.generate_report,
             width=30,
             bg="#23a08e",
             activebackground="#a3ffb4",
@@ -121,11 +148,11 @@ class Buttons(Button):
         self.generate_report_button.grid(
             row=10, column=3, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
-
+        # Add a new transaction button
         self.add_new_transaction_button = Button(
             self,
             text="Add New Transaction",
-            command=self.add_new_transaction,
+            command=Backend.add_new_transaction,
             width=30,
             bg="#6e57d2",
             activebackground="#7a49a5",
@@ -136,22 +163,6 @@ class Buttons(Button):
         self.add_new_transaction_button.grid(
             row=10, column=4, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
-
-    def upload_csv_file(self):
-        """Upload a CSV file."""
-        print("Upload a CSV file.")
-
-    def reset(self):
-        """Reset the application."""
-        print("Reset the application.")
-
-    def generate_report(self):
-        """Generate a report."""
-        print("Generate a report.")
-
-    def add_new_transaction(self):
-        """Add a new transaction."""
-        print("Add a new transaction.")
 
 
 class Application(tk.Tk):
