@@ -218,7 +218,6 @@ class Application(tk.Tk):
         buttons.rowconfigure(2, weight=1)
 
 
-
 if __name__ == "__main__":
     app = Application()
     app.mainloop()
