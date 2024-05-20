@@ -39,7 +39,6 @@ class Backend:
         """Upload a CSV file."""
         print("Upload a CSV file.")
         self.csv_path = filedialog.askopenfilename(initialdir = os.getcwd())
-        print(self.csv_path)
 
     def reset(self):
         """Reset the application."""
@@ -136,16 +135,16 @@ class Buttons(Button):
             self,
             text="Upload CSV File",
             command=self.backend.upload_csv_file,
-            width=30,
+            width=20,
             activebackground="#ffdf4f",
             bg="#e2ff00",
             fg="black",
             activeforeground="black",
-            font=("Roboto", 12),
+            font=("Roboto", 14),
             borderwidth=2,
         )
         self.upload_csv_button.grid(
-            row=10, column=1, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=10, column=0, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
 
         # Reset the application button
@@ -153,15 +152,15 @@ class Buttons(Button):
             self,
             text="Reset",
             command=self.backend.reset,
-            width=30,
+            width=20,
             bg="#ff0000",
             activebackground="#e23a08",
-            fg="white",
-            font=("Roboto", 12),
+            fg="black",
+            font=("Roboto", 14),
             borderwidth=2,
         )
         self.reset_button.grid(
-            row=10, column=2, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=10, column=1, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
 
         # Generate a report button
@@ -169,30 +168,30 @@ class Buttons(Button):
             self,
             text="Generate Report",
             command=self.backend.generate_report,
-            width=30,
+            width=20,
             bg="#23a08e",
             activebackground="#a3ffb4",
-            fg="white",
-            font=("Roboto", 12),
+            fg="black",
+            font=("Roboto", 14),
             borderwidth=2,
         )
         self.generate_report_button.grid(
-            row=10, column=3, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=10, column=2, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
         # Add a new transaction button
         self.add_new_transaction_button = Button(
             self,
             text="Add New Transaction",
             command=self.backend.add_new_transaction,
-            width=30,
+            width=20,
             bg="#6e57d2",
             activebackground="#7a49a5",
-            fg="white",
-            font=("Roboto", 12),
+            fg="black",
+            font=("Roboto", 14),
             borderwidth=2,
         )
         self.add_new_transaction_button.grid(
-            row=10, column=4, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=10, column=3, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
 
 
@@ -203,7 +202,7 @@ class Application(tk.Tk):
         super().__init__(*args, **kwargs)
 
         self.title("Budget Spreadsheet Tracker")
-        self.geometry("1280x640")
+        self.geometry("1400x700")
         self.resizable(True, True)
         self.configure(bg='#add8e6')
         # Empty means we will use the default path
@@ -213,7 +212,7 @@ class Application(tk.Tk):
         Label(
             self,
             text="Budget Spreadsheet Tracker",
-            font=("TkDefaultFont", 16),
+            font=("TkDefaultFont", 14),
         ).grid(row=0)
 
         # Chart
