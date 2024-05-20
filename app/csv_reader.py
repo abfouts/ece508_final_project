@@ -26,6 +26,7 @@ class CSVReader:
         self.file_dir = Path(__file__).parent
         self.path_to_csv = path_to_csv
         self.balance_per_day = {}
+        self.ten_highest_transactions = {}
 
     # Provide the path to the csv
     def read_csv(self):
@@ -53,6 +54,24 @@ class CSVReader:
         self.read_csv()
         self.csv_dict = self.csv_contents.to_dict()
         return self.csv_dict
+
+    def get_ten_highest_transactions(self):
+        """ Returns the ten highest transactions """
+        self.read_csv()
+
+        top10_transactions = self.csv_contents.nlargest(10, 'amount')[
+            ['date', 'amount']]
+
+        dates = top10_transactions["date"].tolist()
+        amounts = top10_transactions["amount"].tolist()
+        # Create a dictionary with the date and amount
+        self.ten_highest_transactions = {
+            "date": dates,
+            "amount": amounts
+        }
+
+        # Return the dictionary
+        return self.ten_highest_transactions
 
     def get_balance_per_day(self):
         """ Returns the balance per day """
@@ -82,3 +101,7 @@ class CSVReader:
         }
         # Return the dictionary
         return self.balance_per_day
+
+
+csv_reader = CSVReader("")
+print(csv_reader.get_ten_highest_transactions())

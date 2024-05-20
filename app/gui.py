@@ -31,8 +31,8 @@ class Backend:
         """Initialize the backend."""
         self.csv_path = csv_path
         self.csv_reader = my_csv_reader.CSVReader(self.csv_path)
-        # self.csv_dict = self.csv_reader.get_csv_dict()
         self.csv_balance_per_day = self.csv_reader.get_balance_per_day()
+        self.csv_ten_highest_transactions = self.csv_reader.get_ten_highest_transactions()
 
     def upload_csv_file(self):
         """Upload a CSV file."""
@@ -51,19 +51,18 @@ class Backend:
         print("Add a new transaction.")
 
     def get_balance_per_day(self):
-        """Get the data for the chart."""
+        """Get the balance per day."""
+
         self.csv_balance_per_day = self.csv_reader.get_balance_per_day()
 
         return self.csv_balance_per_day
 
-    def get_transactions(self):
-        """Get the data for the chart."""
-        transactions_per_day = {
-            "item": ["item1", "item2", "item3", "item4"],
-            "amount": [100, 200, 300, 400],
-        }
+    def get_ten_highest_transactions(self):
+        """Get the ten highest transactions."""
 
-        return transactions_per_day
+        self.csv_ten_highest_transactions = self.csv_reader.get_ten_highest_transactions()
+
+        return self.csv_ten_highest_transactions
 
     def update_csv_path(self, new_path):
         """Update the CSV path."""
@@ -73,20 +72,21 @@ class Backend:
 class Plot(Canvas):
     """Chart class."""
 
-    def __init__(self, balance, transactions, *args, **kwargs):
+    def __init__(self, balance_per_day, ten_highest_transactions, *args, **kwargs):
+        """Initialize the charts"""
         super().__init__(*args, **kwargs)
 
         # Balance array
-        self.balance = balance
+        self.balance = balance_per_day
         # Transactions array
-        self.transactions = transactions
+        self.transactions = ten_highest_transactions
         # Configure the background color
         self.configure(bg="#adbce6")
 
         # Create a matplotlib figure1
-        self.balance_df = pd.DataFrame(self.balance)
+        self.transaction_df = pd.DataFrame(self.transactions)
         # Create a Figure object
-        self.figure1 = Figure(figsize=(6, 5), dpi=100)
+        self.figure1 = Figure(figsize=(6, 5), dpi=120)
         # Create an Axes object
         self.ax1 = self.figure1.add_subplot(111)
         # Plot the data
@@ -94,16 +94,17 @@ class Plot(Canvas):
         # Add the toolbar
         self.bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         # Group the data by category
-        self.ax1.bar(self.balance_df["date"],
-                     self.balance_df["balance"])
+        print(self.transaction_df)
+        self.ax1.bar(self.transaction_df["date"],
+                     self.transaction_df["amount"])
         # Add a title to the plot
-        self.ax1.set_title("Balance")
+        self.ax1.set_title("10 Highest Transactions")
         self.ax1.set_facecolor('#cfcfcf')
 
         # Create a matplotlib figure2
-        self.transactions_df = pd.DataFrame(self.transactions)
+        self.balance_df = pd.DataFrame(self.balance)
         # Create a Figure object
-        self.figure2 = Figure(figsize=(5, 4), dpi=100)
+        self.figure2 = Figure(figsize=(5, 4), dpi=120)
         # Create an Axes object
         self.ax2 = self.figure2.add_subplot(111)
         # Plot the data
@@ -214,7 +215,7 @@ class Application(tk.Tk):
 
         # Chart
         self.balance_per_day = self.backend.get_balance_per_day()
-        self.highest_transactions = self.backend.get_transactions()
+        self.highest_transactions = self.backend.get_ten_highest_transactions()
 
         chart = Plot(self.balance_per_day, self.highest_transactions)
         chart.grid(row=0, sticky="NSEW")
