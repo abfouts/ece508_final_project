@@ -28,7 +28,7 @@ matplotlib.use("TkAgg")
 class Backend:
     """Backend class."""
 
-    def __init__(self, csv_path):
+    def __init__(self, csv_path=None):
         """Initialize the backend."""
         self.csv_path = csv_path
         self.csv_reader = my_csv_reader.CSVReader(self.csv_path)
@@ -38,7 +38,8 @@ class Backend:
     def upload_csv_file(self):
         """Upload a CSV file."""
         print("Upload a CSV file.")
-        path_to_csv = filedialog.askopenfilename(initialdir = os.getcwd())
+        self.csv_path = filedialog.askopenfilename(initialdir = os.getcwd())
+        print(self.csv_path)
 
     def reset(self):
         """Reset the application."""
