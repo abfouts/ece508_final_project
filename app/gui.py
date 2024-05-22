@@ -15,12 +15,13 @@ https://docs.python.org/3/library/tkinter.html
 # Import the necessary modules
 import tkinter as tk
 from tkinter import Button, Label, Canvas, filedialog
+import os
 import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 import csv_reader as my_csv_reader
-import os
+
 
 matplotlib.use("TkAgg")
 
@@ -33,12 +34,14 @@ class Backend:
         self.csv_path = csv_path
         self.csv_reader = my_csv_reader.CSVReader(self.csv_path)
         self.csv_balance_per_day = self.csv_reader.get_balance_per_day()
-        self.csv_ten_highest_transactions = self.csv_reader.get_ten_highest_transactions()
+        self.csv_ten_highest_transactions = (
+            self.csv_reader.get_ten_highest_transactions()
+        )
 
     def upload_csv_file(self):
         """Upload a CSV file."""
         print("Upload a CSV file.")
-        self.csv_path = filedialog.askopenfilename(initialdir = os.getcwd())
+        self.csv_path = filedialog.askopenfilename(initialdir=os.getcwd())
 
     def reset(self):
         """Reset the application."""
@@ -62,7 +65,9 @@ class Backend:
     def get_ten_highest_transactions(self):
         """Get the ten highest transactions."""
 
-        self.csv_ten_highest_transactions = self.csv_reader.get_ten_highest_transactions()
+        self.csv_ten_highest_transactions = (
+            self.csv_reader.get_ten_highest_transactions()
+        )
 
         return self.csv_ten_highest_transactions
 
@@ -84,11 +89,12 @@ class Plot(Canvas):
         self.transactions = ten_highest_transactions
         # Configure the background color
         self.configure(bg="#adbce6")
-
+        # -----------------------------------------
         # Create a matplotlib figure1
+        # -----------------------------------------
         self.transaction_df = pd.DataFrame(self.transactions)
         # Create a Figure object
-        self.figure1 = Figure(figsize=(6, 5), dpi=120)
+        self.figure1 = Figure(figsize=(6, 5), dpi=100)
         # Create an Axes object
         self.ax1 = self.figure1.add_subplot(111)
         # Plot the data
@@ -96,17 +102,31 @@ class Plot(Canvas):
         # Add the toolbar
         self.bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         # Group the data by category
-        print(self.transaction_df)
-        self.ax1.bar(self.transaction_df["date"],
-                     self.transaction_df["amount"])
+
+        self.ax1.bar(self.transaction_df["date"], self.transaction_df["amount"])
         # Add a title to the plot
         self.ax1.set_title("10 Highest Transactions")
-        self.ax1.set_facecolor('#cfcfcf')
-
+        self.ax1.set_facecolor("#cfcfcf")
+        self.ax1.set_xlabel("Date")
+        self.ax1.set_ylabel("Amount in Dollars")
+        self.ax1.set_xticklabels(self.transaction_df["date"], rotation=90)
+        self.ax1.set_yticklabels(self.transaction_df["amount"])
+        self.ax1.set_xticks(self.transaction_df["date"])
+        self.ax1.set_autoscaley_on(True)
+        self.ax1.set_autoscalex_on(True)
+        self.ax1.minorticks_on()
+        self.ax1.legend("$", fontsize=10)
+        self.ax1.yaxis_date()
+        self.ax1.violinplot(self.transaction_df["amount"])
+        self.ax1.indicate_inset_zoom(self.ax1, edgecolor="black")
+        self.ax1.set_ylim(0, 20000)
+        self.ax1.set_autoscale_on(True)
+        # -----------------------------------------
         # Create a matplotlib figure2
+        # -----------------------------------------
         self.balance_df = pd.DataFrame(self.balance)
         # Create a Figure object
-        self.figure2 = Figure(figsize=(5, 4), dpi=120)
+        self.figure2 = Figure(figsize=(5, 4), dpi=100)
         # Create an Axes object
         self.ax2 = self.figure2.add_subplot(111)
         # Plot the data
@@ -114,11 +134,24 @@ class Plot(Canvas):
         # Add the toolbar
         self.line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
         # Group the data by date
-        self.ax2.plot(self.balance_df["date"],
-                      self.balance_df["balance"])
+        self.ax2.plot(
+            self.balance_df["date"], self.balance_df["balance"], "b", label="Balance"
+        )
         # Add a title to the plot
         self.ax2.set_title("Balance in Dollars")
-        self.ax2.set_facecolor('#cfcfcf')
+        self.ax2.set_facecolor("#cfcfcf")
+        self.ax2.set_xlabel("Date")
+        self.ax2.set_ylabel("Dollars")
+        self.ax2.set_xticklabels(self.balance_df["date"], rotation=90)
+        self.ax2.set_xticks(self.balance_df["date"])
+        self.ax2.set_autoscaley_on(True)
+        self.ax2.set_autoscalex_on(True)
+        self.ax2.minorticks_on()
+        self.ax2.legend("$", fontsize=10)
+
+        self.ax2.violinplot(self.balance_df["balance"])
+        self.ax2.indicate_inset_zoom(self.ax2, edgecolor="black")
+        self.ax2.set_autoscale_on(True)
 
 
 class Buttons(Button):
@@ -202,11 +235,11 @@ class Application(tk.Tk):
         super().__init__(*args, **kwargs)
 
         self.title("Budget Spreadsheet Tracker")
-        self.geometry("1400x700")
+        self.geometry("1100x600")
         self.resizable(True, True)
-        self.configure(bg='#add8e6')
+        self.configure(bg="#add8e6")
         # Empty means we will use the default path
-        self.backend = Backend('')
+        self.backend = Backend("")
 
         # Create the application's label
         Label(
