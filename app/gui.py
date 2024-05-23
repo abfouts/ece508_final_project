@@ -37,6 +37,7 @@ class Backend:
         self.csv_ten_highest_transactions = (
             self.csv_reader.get_ten_highest_transactions()
         )
+        self.chart = Plot(None, None) 
 
     def upload_csv_file(self):
         """Upload a CSV file."""
@@ -46,10 +47,19 @@ class Backend:
     def reset(self):
         """Reset the application."""
         print("Reset the application.")
+        self.chart.destroy()
+        self.chart.grid(row=0, sticky="NSEW")
 
     def generate_report(self):
         """Generate a report."""
         print("Generate a report.")
+
+        # Chart
+        self.balance_per_day = self.get_balance_per_day()
+        self.highest_transactions = self.get_ten_highest_transactions()
+
+        self.chart = Plot(self.balance_per_day, self.highest_transactions)
+        self.chart.grid(row=0, sticky="NSEW")
 
     def add_new_transaction(self):
         """Add a new transaction."""
@@ -82,6 +92,11 @@ class Plot(Canvas):
     def __init__(self, balance_per_day, ten_highest_transactions, *args, **kwargs):
         """Initialize the charts"""
         super().__init__(*args, **kwargs)
+
+        if balance_per_day is None:
+            return
+        if ten_highest_transactions is None:
+            return
 
         # Balance array
         self.balance = balance_per_day
@@ -249,11 +264,11 @@ class Application(tk.Tk):
         ).grid(row=0)
 
         # Chart
-        self.balance_per_day = self.backend.get_balance_per_day()
-        self.highest_transactions = self.backend.get_ten_highest_transactions()
+        #self.balance_per_day = self.backend.get_balance_per_day()
+        #self.highest_transactions = self.backend.get_ten_highest_transactions()
 
-        chart = Plot(self.balance_per_day, self.highest_transactions)
-        chart.grid(row=0, sticky="NSEW")
+        #chart = Plot(self.balance_per_day, self.highest_transactions)
+        #chart.grid(row=0, sticky="NSEW")
 
         # Buttons
         buttons = Buttons()

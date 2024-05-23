@@ -7,7 +7,7 @@
 #               parses the CSVs first row into unique column entry lists
 #
 # Date  : 05/18/2024
-# Author: Abram Fouts, Nikolay
+# Author: Abram Fouts, Niko Nikolov
 ##############################################################################
 """
 
