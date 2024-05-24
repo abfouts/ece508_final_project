@@ -37,7 +37,7 @@ class Backend:
         self.csv_ten_highest_transactions = (
             self.csv_reader.get_ten_highest_transactions()
         )
-        self.chart = Plot(None, None) 
+        self.chart = Plot(None, None)
 
     def upload_csv_file(self):
         """Upload a CSV file."""
@@ -226,21 +226,6 @@ class Buttons(Button):
         self.generate_report_button.grid(
             row=10, column=2, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
         )
-        # Add a new transaction button
-        self.add_new_transaction_button = Button(
-            self,
-            text="Add New Transaction",
-            command=self.backend.add_new_transaction,
-            width=20,
-            bg="#6e57d2",
-            activebackground="#7a49a5",
-            fg="black",
-            font=("Roboto", 14),
-            borderwidth=2,
-        )
-        self.add_new_transaction_button.grid(
-            row=10, column=3, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
-        )
 
 
 class Application(tk.Tk):
@@ -264,11 +249,11 @@ class Application(tk.Tk):
         ).grid(row=0)
 
         # Chart
-        #self.balance_per_day = self.backend.get_balance_per_day()
-        #self.highest_transactions = self.backend.get_ten_highest_transactions()
+        # self.balance_per_day = self.backend.get_balance_per_day()
+        # self.highest_transactions = self.backend.get_ten_highest_transactions()
 
-        #chart = Plot(self.balance_per_day, self.highest_transactions)
-        #chart.grid(row=0, sticky="NSEW")
+        # chart = Plot(self.balance_per_day, self.highest_transactions)
+        # chart.grid(row=0, sticky="NSEW")
 
         # Buttons
         buttons = Buttons()
