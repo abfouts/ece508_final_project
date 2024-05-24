@@ -37,6 +37,8 @@ class Backend:
         self.csv_ten_highest_transactions = (
             self.csv_reader.get_ten_highest_transactions()
         )
+        self.balance_per_day = None
+        self.highest_transactions = None
         self.chart = Plot(None, None)
 
     def upload_csv_file(self):
@@ -109,7 +111,10 @@ class Plot(Canvas):
         # -----------------------------------------
         self.transaction_df = pd.DataFrame(self.transactions)
         # Create a Figure object
-        self.figure1 = Figure(figsize=(6, 5), dpi=100)
+        self.figure1 = Figure(
+            figsize=(6, 5),
+            dpi=100,
+        )
         # Create an Axes object
         self.ax1 = self.figure1.add_subplot(111)
         # Plot the data
@@ -136,6 +141,7 @@ class Plot(Canvas):
         self.ax1.indicate_inset_zoom(self.ax1, edgecolor="black")
         self.ax1.set_ylim(0, 20000)
         self.ax1.set_autoscale_on(True)
+
         # -----------------------------------------
         # Create a matplotlib figure2
         # -----------------------------------------
@@ -162,11 +168,13 @@ class Plot(Canvas):
         self.ax2.set_autoscaley_on(True)
         self.ax2.set_autoscalex_on(True)
         self.ax2.minorticks_on()
-        self.ax2.legend("$", fontsize=10)
+        self.ax2.legend("$", fontsize=8)
 
         self.ax2.violinplot(self.balance_df["balance"])
         self.ax2.indicate_inset_zoom(self.ax2, edgecolor="black")
         self.ax2.set_autoscale_on(True)
+
+        # Create a matplotlib figure3
 
 
 class Buttons(Button):
