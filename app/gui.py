@@ -13,9 +13,11 @@ https://docs.python.org/3/library/tkinter.html
 """
 
 # Import the necessary modules
+from textwrap import fill
 import tkinter as tk
 from tkinter import Button, Label, Canvas, filedialog
 import os
+from turtle import pos
 import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -59,9 +61,10 @@ class Backend:
         # Chart
         self.balance_per_day = self.get_balance_per_day()
         self.highest_transactions = self.get_ten_highest_transactions()
-
         self.chart = Plot(self.balance_per_day, self.highest_transactions)
-        self.chart.grid(row=0, sticky="NSEW")
+        self.chart.grid(row=0, sticky="NSEW", fill=tk.BOTH, expand=True)
+        self.chart.columnconfigure(0, weight=1, minsize=100)
+        self.chart.rowconfigure(0, weight=1, minsize=100)
 
     def add_new_transaction(self):
         """Add a new transaction."""
@@ -112,7 +115,7 @@ class Plot(Canvas):
         self.transaction_df = pd.DataFrame(self.transactions)
         # Create a Figure object
         self.figure1 = Figure(
-            figsize=(6, 5),
+            figsize=(4, 3),
             dpi=100,
         )
         # Create an Axes object
@@ -120,7 +123,7 @@ class Plot(Canvas):
         # Plot the data
         self.bar1 = FigureCanvasTkAgg(self.figure1, self)
         # Add the toolbar
-        self.bar1.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
+        self.bar1.get_tk_widget().pack()
         # Group the data by category
 
         self.ax1.bar(self.transaction_df["date"], self.transaction_df["amount"])
@@ -129,9 +132,9 @@ class Plot(Canvas):
         self.ax1.set_facecolor("#cfcfcf")
         self.ax1.set_xlabel("Date")
         self.ax1.set_ylabel("Amount in Dollars")
-        self.ax1.set_xticklabels(self.transaction_df["date"], rotation=90)
-        self.ax1.set_yticklabels(self.transaction_df["amount"])
         self.ax1.set_xticks(self.transaction_df["date"])
+        self.ax1.set_xticklabels(self.transaction_df["date"], rotation=90)
+
         self.ax1.set_autoscaley_on(True)
         self.ax1.set_autoscalex_on(True)
         self.ax1.minorticks_on()
@@ -147,7 +150,7 @@ class Plot(Canvas):
         # -----------------------------------------
         self.balance_df = pd.DataFrame(self.balance)
         # Create a Figure object
-        self.figure2 = Figure(figsize=(5, 4), dpi=100)
+        self.figure2 = Figure(figsize=(4, 3), dpi=120)
         # Create an Axes object
         self.ax2 = self.figure2.add_subplot(111)
         # Plot the data
@@ -163,8 +166,9 @@ class Plot(Canvas):
         self.ax2.set_facecolor("#cfcfcf")
         self.ax2.set_xlabel("Date")
         self.ax2.set_ylabel("Dollars")
-        self.ax2.set_xticklabels(self.balance_df["date"], rotation=90)
         self.ax2.set_xticks(self.balance_df["date"])
+        self.ax2.set_xticklabels(self.balance_df["date"], rotation=90)
+
         self.ax2.set_autoscaley_on(True)
         self.ax2.set_autoscalex_on(True)
         self.ax2.minorticks_on()
@@ -175,6 +179,68 @@ class Plot(Canvas):
         self.ax2.set_autoscale_on(True)
 
         # Create a matplotlib figure3
+
+        self.spending = pd.DataFrame(self.balance)
+        # Create a Figure object
+        self.figure3 = Figure(figsize=(4, 3), dpi=120)
+        # Create an Axes object
+        self.ax3 = self.figure3.add_subplot(111)
+        # Plot the data
+        self.line3 = FigureCanvasTkAgg(self.figure3, self)
+        # Add the toolbar
+        self.line3.get_tk_widget().pack()
+        # Group the data by date
+        self.ax3.plot(
+            self.balance_df["date"], self.balance_df["balance"], "b", label="Balance"
+        )
+        # Add a title to the plot
+        self.ax3.set_title("Balance in Dollars")
+        self.ax3.set_facecolor("#cfcfcf")
+        self.ax3.set_xlabel("Date")
+        self.ax3.set_ylabel("Dollars")
+        self.ax3.set_xticks(self.balance_df["date"])
+        self.ax3.set_xticklabels(self.balance_df["date"], rotation=90)
+
+        self.ax3.set_autoscaley_on(True)
+        self.ax3.set_autoscalex_on(True)
+        self.ax3.minorticks_on()
+        self.ax3.legend("$", fontsize=8)
+
+        self.ax3.violinplot(self.balance_df["balance"])
+        self.ax3.indicate_inset_zoom(self.ax3, edgecolor="black")
+        self.ax3.set_autoscale_on(True)
+
+        # Create a matplotlib figure3
+
+        self.inflow = pd.DataFrame(self.balance)
+        # Create a Figure object
+        self.figure4 = Figure(figsize=(4, 3), dpi=120)
+        # Create an Axes object
+        self.ax4 = self.figure4.add_subplot(111)
+        # Plot the data
+        self.line4 = FigureCanvasTkAgg(self.figure3, self)
+        # Add the toolbar
+        self.line4.get_tk_widget().pack()
+        # Group the data by date
+        self.ax4.plot(
+            self.balance_df["date"], self.balance_df["balance"], "b", label="Balance"
+        )
+        # Add a title to the plot
+        self.ax4.set_title("Balance in Dollars")
+        self.ax4.set_facecolor("#cfcfcf")
+        self.ax4.set_xlabel("Date")
+        self.ax4.set_ylabel("Dollars")
+        self.ax4.set_xticks(self.balance_df["date"])
+        self.ax4.set_xticklabels(self.balance_df["date"], rotation=90)
+
+        self.ax4.set_autoscaley_on(True)
+        self.ax4.set_autoscalex_on(True)
+        self.ax4.minorticks_on()
+        self.ax4.legend("$", fontsize=8)
+
+        self.ax4.violinplot(self.balance_df["balance"])
+        self.ax4.indicate_inset_zoom(self.ax4, edgecolor="black")
+        self.ax4.set_autoscale_on(True)
 
 
 class Buttons(Button):
@@ -255,13 +321,6 @@ class Application(tk.Tk):
             text="Budget Spreadsheet Tracker",
             font=("TkDefaultFont", 14),
         ).grid(row=0)
-
-        # Chart
-        # self.balance_per_day = self.backend.get_balance_per_day()
-        # self.highest_transactions = self.backend.get_ten_highest_transactions()
-
-        # chart = Plot(self.balance_per_day, self.highest_transactions)
-        # chart.grid(row=0, sticky="NSEW")
 
         # Buttons
         buttons = Buttons()
