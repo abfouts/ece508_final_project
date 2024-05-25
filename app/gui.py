@@ -59,8 +59,15 @@ class Backend:
         self.csv_reader.read_csv()
         self.balance_per_day = self.get_balance_per_day()
         self.highest_transactions = self.get_ten_highest_transactions()
+
         self.chart = PlotTop(self.balance_per_day, self.highest_transactions)
-        self.chart.grid(row=0, column=0)
+        self.chart.grid(
+            row=0,
+            column=0,
+            sticky="nw",
+        )
+        self.chart_bottom = PlotBottom(self.balance_per_day, self.highest_transactions)
+        self.chart_bottom.grid(row=0, column=0)
 
     def get_balance_per_day(self):
         """Get the balance per day."""
@@ -103,35 +110,39 @@ class PlotTop(Canvas):
         """Creates the first figure"""
         # Create figure 1
         transaction_df = pd.DataFrame(self.transactions)
-        self.figure1 = Figure(figsize=(3, 3), dpi=80)
-        self.ax1 = self.figure1.add_subplot(111)
+        self.figure1 = Figure(figsize=(4, 3), dpi=65)
+        self.ax1 = self.figure1.add_subplot()
         self.bar1 = FigureCanvasTkAgg(self.figure1, self)
 
         self.ax1.bar(transaction_df["date"], transaction_df["amount"])
-        self.ax1.set_title("10 Highest Transactions")
+        self.ax1.set_title("10 Highest Purchases")
         self.ax1.set_facecolor("#cfcfcf")
         self.ax1.set_xlabel("Date")
         self.ax1.set_ylabel("Amount in Dollars")
         self.ax1.set_xticks(transaction_df["date"])
         self.ax1.set_xticklabels(transaction_df["date"], rotation=90)
-        self.bar1.get_tk_widget().pack(expand=False, side=tk.TOP, ipadx=50, ipady=50)
+        self.bar1.get_tk_widget().pack(
+            expand=False, side=tk.TOP, ipadx=60, ipady=60, anchor="w", fill="both"
+        )
 
     def create_figure2(self):
         """Creates the second figure"""
 
         balance_df = pd.DataFrame(self.balance)
-        self.figure2 = Figure(figsize=(3, 3), dpi=80)
+        self.figure2 = Figure(figsize=(4, 3), dpi=65)
         self.ax2 = self.figure2.add_subplot()
         self.line2 = FigureCanvasTkAgg(self.figure2, self)
 
         self.ax2.plot(balance_df["date"], balance_df["balance"], "b", label="Balance")
-        self.ax2.set_title("Balance in Dollars")
+        self.ax2.set_title("Balance the Last 30 Days")
         self.ax2.set_facecolor("#cfcfcf")
         self.ax2.set_xlabel("Date")
         self.ax2.set_ylabel("Dollars")
         self.ax2.set_xticks(balance_df["date"])
         self.ax2.set_xticklabels(balance_df["date"], rotation=90)
-        self.line2.get_tk_widget().pack(expand=False, side=tk.TOP, ipadx=50, ipady=50)
+        self.line2.get_tk_widget().pack(
+            expand=False, side=tk.TOP, ipadx=60, ipady=60, anchor="w", fill="both"
+        )
 
 
 class PlotBottom(Canvas):
@@ -154,8 +165,8 @@ class PlotBottom(Canvas):
         """Creates the first figure"""
         # Create figure 1
         transaction_df = pd.DataFrame(self.transactions)
-        self.figure1 = Figure(figsize=(3, 3), dpi=80)
-        self.ax1 = self.figure1.add_subplot(111)
+        self.figure1 = Figure(figsize=(4, 3), dpi=65)
+        self.ax1 = self.figure1.add_subplot()
         self.bar1 = FigureCanvasTkAgg(self.figure1, self)
 
         self.ax1.bar(transaction_df["date"], transaction_df["amount"])
@@ -165,13 +176,15 @@ class PlotBottom(Canvas):
         self.ax1.set_ylabel("Amount in Dollars")
         self.ax1.set_xticks(transaction_df["date"])
         self.ax1.set_xticklabels(transaction_df["date"], rotation=90)
-        self.bar1.get_tk_widget().pack(expand=False, side=tk.LEFT, ipadx=50, ipady=50)
+        self.bar1.get_tk_widget().pack(
+            expand=False, side=tk.TOP, ipadx=60, ipady=60, anchor="e", fill="both"
+        )
 
     def create_figure2(self):
         """Creates the second figure"""
 
         balance_df = pd.DataFrame(self.balance)
-        self.figure2 = Figure(figsize=(3, 3), dpi=80)
+        self.figure2 = Figure(figsize=(4, 3), dpi=65)
         self.ax2 = self.figure2.add_subplot()
         self.line2 = FigureCanvasTkAgg(self.figure2, self)
 
@@ -182,7 +195,9 @@ class PlotBottom(Canvas):
         self.ax2.set_ylabel("Dollars")
         self.ax2.set_xticks(balance_df["date"])
         self.ax2.set_xticklabels(balance_df["date"], rotation=90)
-        self.line2.get_tk_widget().pack(expand=False, side=tk.LEFT, ipadx=50, ipady=50)
+        self.line2.get_tk_widget().pack(
+            expand=False, side=tk.TOP, ipadx=60, ipady=60, anchor="e", fill="both"
+        )
 
 
 class Buttons(Button):
@@ -260,12 +275,13 @@ class MyCanvas(Canvas):
         super().__init__(*args, **kwargs)
 
         self.bg = tk.PhotoImage(file="Designer.png")
-        self.my_canvas = Canvas(self, width=1000, height=600)
+        self.my_canvas = Canvas(self, width=1050, height=550)
 
         self.my_canvas.create_image(0, 0, image=self.bg, anchor="nw")
         self.my_canvas.pack(
-            fill="both", expand=True, padx=10, pady=10, ipadx=5, ipady=5, side="top"
+            fill="both", expand=True, padx=10, pady=10, ipadx=10, ipady=10, side="top"
         )
+        self.my_canvas.pack_configure(fill="both", expand=True)
 
 
 class Application(tk.Tk):
@@ -278,6 +294,7 @@ class Application(tk.Tk):
         self.my_canvas = MyCanvas()
         self.my_canvas.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
         self.my_canvas.grid_columnconfigure(0, weight=1)
+        self.my_canvas.grid_rowconfigure(0, weight=1)
 
         # Create the button structure
         self.my_buttons = Buttons()
@@ -292,7 +309,7 @@ if __name__ == "__main__":
     app = Application()
     app.title("Budget Spreadsheet Tracker")
     app.configure(bg="white")
-    app.geometry("1100x800")
+    app.geometry("1100x700")
     app.grid()
 
     app.mainloop()
