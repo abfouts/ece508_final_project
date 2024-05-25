@@ -13,62 +13,54 @@ https://docs.python.org/3/library/tkinter.html
 """
 
 # Import the necessary modules
-from textwrap import fill
-import tkinter as tk
-from tkinter import Button, Label, Canvas, filedialog
-import os
-from turtle import pos
-import matplotlib
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import pandas as pd
-import csv_reader as my_csv_reader
 
+import os
+import tkinter as tk
+from tkinter import Button, Canvas, filedialog
+
+import matplotlib
+import pandas as pd
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+
+import csv_reader as my_csv_reader
 
 matplotlib.use("TkAgg")
 
 
 class Backend:
-    """Backend class."""
+    """Backend class for the Budget Spreadsheet Tracker application"""
 
     def __init__(self, csv_path=None):
-        """Initialize the backend."""
         self.csv_path = csv_path
         self.csv_reader = my_csv_reader.CSVReader(self.csv_path)
-        self.csv_balance_per_day = self.csv_reader.get_balance_per_day()
-        self.csv_ten_highest_transactions = (
-            self.csv_reader.get_ten_highest_transactions()
-        )
         self.balance_per_day = None
         self.highest_transactions = None
-        self.chart = Plot(None, None)
+        self.chart_top = None
+        self.chart_bottom = None
+        self.buttons = None
+        self.chart = None
 
     def upload_csv_file(self):
-        """Upload a CSV file."""
-        print("Upload a CSV file.")
+        """Uploads a csv file"""
         self.csv_path = filedialog.askopenfilename(initialdir=os.getcwd())
 
     def reset(self):
-        """Reset the application."""
-        print("Reset the application.")
-        self.chart.destroy()
-        self.chart.grid(row=0, sticky="NSEW")
+        """Resets the application to its initial state"""
+        if self.chart_top and self.chart_bottom:
+            self.chart_top.destroy()
+            self.chart_bottom.destroy()
+
+        self.chart_top = PlotTop(self.balance_per_day, self.highest_transactions)
+        self.chart_bottom = PlotBottom(self.balance_per_day, self.highest_transactions)
 
     def generate_report(self):
-        """Generate a report."""
-        print("Generate a report.")
-
-        # Chart
+        """Generates a report"""
+        self.csv_reader.read_csv()
         self.balance_per_day = self.get_balance_per_day()
         self.highest_transactions = self.get_ten_highest_transactions()
-        self.chart = Plot(self.balance_per_day, self.highest_transactions)
-        self.chart.grid(row=0, sticky="NSEW", fill=tk.BOTH, expand=True)
-        self.chart.columnconfigure(0, weight=1, minsize=100)
-        self.chart.rowconfigure(0, weight=1, minsize=100)
-
-    def add_new_transaction(self):
-        """Add a new transaction."""
-        print("Add a new transaction.")
+        self.chart = PlotTop(self.balance_per_day, self.highest_transactions)
+        self.chart.grid(row=0, column=0)
 
     def get_balance_per_day(self):
         """Get the balance per day."""
@@ -91,168 +83,117 @@ class Backend:
         self.csv_path = new_path
 
 
-class Plot(Canvas):
-    """Chart class."""
+class PlotTop(Canvas):
+    """Plot class for the Budget Spreadsheet Tracker application"""
 
     def __init__(self, balance_per_day, ten_highest_transactions, *args, **kwargs):
-        """Initialize the charts"""
         super().__init__(*args, **kwargs)
 
-        if balance_per_day is None:
-            return
-        if ten_highest_transactions is None:
+        if balance_per_day is None or ten_highest_transactions is None:
             return
 
-        # Balance array
         self.balance = balance_per_day
-        # Transactions array
         self.transactions = ten_highest_transactions
-        # Configure the background color
         self.configure(bg="#adbce6")
-        # -----------------------------------------
-        # Create a matplotlib figure1
-        # -----------------------------------------
-        self.transaction_df = pd.DataFrame(self.transactions)
-        # Create a Figure object
-        self.figure1 = Figure(
-            figsize=(4, 3),
-            dpi=100,
-        )
-        # Create an Axes object
-        self.ax1 = self.figure1.add_subplot(111)
-        # Plot the data
-        self.bar1 = FigureCanvasTkAgg(self.figure1, self)
-        # Add the toolbar
-        self.bar1.get_tk_widget().pack()
-        # Group the data by category
 
-        self.ax1.bar(self.transaction_df["date"], self.transaction_df["amount"])
-        # Add a title to the plot
+        self.create_figure1()
+        self.create_figure2()
+
+    def create_figure1(self):
+        """Creates the first figure"""
+        # Create figure 1
+        transaction_df = pd.DataFrame(self.transactions)
+        self.figure1 = Figure(figsize=(3, 3), dpi=80)
+        self.ax1 = self.figure1.add_subplot(111)
+        self.bar1 = FigureCanvasTkAgg(self.figure1, self)
+
+        self.ax1.bar(transaction_df["date"], transaction_df["amount"])
         self.ax1.set_title("10 Highest Transactions")
         self.ax1.set_facecolor("#cfcfcf")
         self.ax1.set_xlabel("Date")
         self.ax1.set_ylabel("Amount in Dollars")
-        self.ax1.set_xticks(self.transaction_df["date"])
-        self.ax1.set_xticklabels(self.transaction_df["date"], rotation=90)
+        self.ax1.set_xticks(transaction_df["date"])
+        self.ax1.set_xticklabels(transaction_df["date"], rotation=90)
+        self.bar1.get_tk_widget().pack(expand=False, side=tk.TOP, ipadx=50, ipady=50)
 
-        self.ax1.set_autoscaley_on(True)
-        self.ax1.set_autoscalex_on(True)
-        self.ax1.minorticks_on()
-        self.ax1.legend("$", fontsize=10)
-        self.ax1.yaxis_date()
-        self.ax1.violinplot(self.transaction_df["amount"])
-        self.ax1.indicate_inset_zoom(self.ax1, edgecolor="black")
-        self.ax1.set_ylim(0, 20000)
-        self.ax1.set_autoscale_on(True)
+    def create_figure2(self):
+        """Creates the second figure"""
 
-        # -----------------------------------------
-        # Create a matplotlib figure2
-        # -----------------------------------------
-        self.balance_df = pd.DataFrame(self.balance)
-        # Create a Figure object
-        self.figure2 = Figure(figsize=(4, 3), dpi=120)
-        # Create an Axes object
-        self.ax2 = self.figure2.add_subplot(111)
-        # Plot the data
+        balance_df = pd.DataFrame(self.balance)
+        self.figure2 = Figure(figsize=(3, 3), dpi=80)
+        self.ax2 = self.figure2.add_subplot()
         self.line2 = FigureCanvasTkAgg(self.figure2, self)
-        # Add the toolbar
-        self.line2.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH)
-        # Group the data by date
-        self.ax2.plot(
-            self.balance_df["date"], self.balance_df["balance"], "b", label="Balance"
-        )
-        # Add a title to the plot
+
+        self.ax2.plot(balance_df["date"], balance_df["balance"], "b", label="Balance")
         self.ax2.set_title("Balance in Dollars")
         self.ax2.set_facecolor("#cfcfcf")
         self.ax2.set_xlabel("Date")
         self.ax2.set_ylabel("Dollars")
-        self.ax2.set_xticks(self.balance_df["date"])
-        self.ax2.set_xticklabels(self.balance_df["date"], rotation=90)
+        self.ax2.set_xticks(balance_df["date"])
+        self.ax2.set_xticklabels(balance_df["date"], rotation=90)
+        self.line2.get_tk_widget().pack(expand=False, side=tk.TOP, ipadx=50, ipady=50)
 
-        self.ax2.set_autoscaley_on(True)
-        self.ax2.set_autoscalex_on(True)
-        self.ax2.minorticks_on()
-        self.ax2.legend("$", fontsize=8)
 
-        self.ax2.violinplot(self.balance_df["balance"])
-        self.ax2.indicate_inset_zoom(self.ax2, edgecolor="black")
-        self.ax2.set_autoscale_on(True)
+class PlotBottom(Canvas):
+    """Plot class for the Budget Spreadsheet Tracker application"""
 
-        # Create a matplotlib figure3
+    def __init__(self, balance_per_day, ten_highest_transactions, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-        self.spending = pd.DataFrame(self.balance)
-        # Create a Figure object
-        self.figure3 = Figure(figsize=(4, 3), dpi=120)
-        # Create an Axes object
-        self.ax3 = self.figure3.add_subplot(111)
-        # Plot the data
-        self.line3 = FigureCanvasTkAgg(self.figure3, self)
-        # Add the toolbar
-        self.line3.get_tk_widget().pack()
-        # Group the data by date
-        self.ax3.plot(
-            self.balance_df["date"], self.balance_df["balance"], "b", label="Balance"
-        )
-        # Add a title to the plot
-        self.ax3.set_title("Balance in Dollars")
-        self.ax3.set_facecolor("#cfcfcf")
-        self.ax3.set_xlabel("Date")
-        self.ax3.set_ylabel("Dollars")
-        self.ax3.set_xticks(self.balance_df["date"])
-        self.ax3.set_xticklabels(self.balance_df["date"], rotation=90)
+        if balance_per_day is None or ten_highest_transactions is None:
+            return
 
-        self.ax3.set_autoscaley_on(True)
-        self.ax3.set_autoscalex_on(True)
-        self.ax3.minorticks_on()
-        self.ax3.legend("$", fontsize=8)
+        self.balance = balance_per_day
+        self.transactions = ten_highest_transactions
+        self.configure(bg="#adbce6")
 
-        self.ax3.violinplot(self.balance_df["balance"])
-        self.ax3.indicate_inset_zoom(self.ax3, edgecolor="black")
-        self.ax3.set_autoscale_on(True)
+        self.create_figure1()
+        self.create_figure2()
 
-        # Create a matplotlib figure3
+    def create_figure1(self):
+        """Creates the first figure"""
+        # Create figure 1
+        transaction_df = pd.DataFrame(self.transactions)
+        self.figure1 = Figure(figsize=(3, 3), dpi=80)
+        self.ax1 = self.figure1.add_subplot(111)
+        self.bar1 = FigureCanvasTkAgg(self.figure1, self)
 
-        self.inflow = pd.DataFrame(self.balance)
-        # Create a Figure object
-        self.figure4 = Figure(figsize=(4, 3), dpi=120)
-        # Create an Axes object
-        self.ax4 = self.figure4.add_subplot(111)
-        # Plot the data
-        self.line4 = FigureCanvasTkAgg(self.figure3, self)
-        # Add the toolbar
-        self.line4.get_tk_widget().pack()
-        # Group the data by date
-        self.ax4.plot(
-            self.balance_df["date"], self.balance_df["balance"], "b", label="Balance"
-        )
-        # Add a title to the plot
-        self.ax4.set_title("Balance in Dollars")
-        self.ax4.set_facecolor("#cfcfcf")
-        self.ax4.set_xlabel("Date")
-        self.ax4.set_ylabel("Dollars")
-        self.ax4.set_xticks(self.balance_df["date"])
-        self.ax4.set_xticklabels(self.balance_df["date"], rotation=90)
+        self.ax1.bar(transaction_df["date"], transaction_df["amount"])
+        self.ax1.set_title("10 Highest Transactions")
+        self.ax1.set_facecolor("#cfcfcf")
+        self.ax1.set_xlabel("Date")
+        self.ax1.set_ylabel("Amount in Dollars")
+        self.ax1.set_xticks(transaction_df["date"])
+        self.ax1.set_xticklabels(transaction_df["date"], rotation=90)
+        self.bar1.get_tk_widget().pack(expand=False, side=tk.LEFT, ipadx=50, ipady=50)
 
-        self.ax4.set_autoscaley_on(True)
-        self.ax4.set_autoscalex_on(True)
-        self.ax4.minorticks_on()
-        self.ax4.legend("$", fontsize=8)
+    def create_figure2(self):
+        """Creates the second figure"""
 
-        self.ax4.violinplot(self.balance_df["balance"])
-        self.ax4.indicate_inset_zoom(self.ax4, edgecolor="black")
-        self.ax4.set_autoscale_on(True)
+        balance_df = pd.DataFrame(self.balance)
+        self.figure2 = Figure(figsize=(3, 3), dpi=80)
+        self.ax2 = self.figure2.add_subplot()
+        self.line2 = FigureCanvasTkAgg(self.figure2, self)
+
+        self.ax2.plot(balance_df["date"], balance_df["balance"], "b", label="Balance")
+        self.ax2.set_title("Balance in Dollars")
+        self.ax2.set_facecolor("#cfcfcf")
+        self.ax2.set_xlabel("Date")
+        self.ax2.set_ylabel("Dollars")
+        self.ax2.set_xticks(balance_df["date"])
+        self.ax2.set_xticklabels(balance_df["date"], rotation=90)
+        self.line2.get_tk_widget().pack(expand=False, side=tk.LEFT, ipadx=50, ipady=50)
 
 
 class Buttons(Button):
-    """Buttons class."""
+    """Button class for the Budget Spreadsheet Tracker application"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Empty string means default path
+        self.csv_path = ""
         self.csv_path = ""
         self.backend = Backend(self.csv_path)
 
-        # Upload a csv file button
         self.upload_csv_button = Button(
             self,
             text="Upload CSV File",
@@ -265,11 +206,11 @@ class Buttons(Button):
             font=("Roboto", 14),
             borderwidth=2,
         )
+
         self.upload_csv_button.grid(
-            row=10, column=0, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=3, column=0, sticky="nsew", padx=10, pady=5, ipadx=50, ipady=5
         )
 
-        # Reset the application button
         self.reset_button = Button(
             self,
             text="Reset",
@@ -282,15 +223,15 @@ class Buttons(Button):
             borderwidth=2,
         )
         self.reset_button.grid(
-            row=10, column=1, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=3, column=1, padx=10, sticky="nsew", pady=5, ipadx=50, ipady=5
         )
 
-        # Generate a report button
         self.generate_report_button = Button(
             self,
             text="Generate Report",
             command=self.backend.generate_report,
             width=20,
+            activeforeground="black",
             bg="#23a08e",
             activebackground="#a3ffb4",
             fg="black",
@@ -298,37 +239,60 @@ class Buttons(Button):
             borderwidth=2,
         )
         self.generate_report_button.grid(
-            row=10, column=2, sticky="NSEW", padx=5, pady=5, ipadx=5, ipady=5
+            row=3,
+            column=23,
+            padx=10,
+            sticky="we",
+            pady=5,
+            ipadx=50,
+            ipady=5,
+            rowspan=3,
+            columnspan=3,
         )
 
+        self.generate_report_button.grid_columnconfigure(3, weight=1)
 
-class Application(tk.Tk):
-    """Application root window."""
+
+class MyCanvas(Canvas):
+    """Canvas class for the Budget Spreadsheet Tracker application"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.title("Budget Spreadsheet Tracker")
-        self.geometry("1100x600")
-        self.resizable(True, True)
-        self.configure(bg="#add8e6")
-        # Empty means we will use the default path
-        self.backend = Backend("")
+        self.bg = tk.PhotoImage(file="Designer.png")
+        self.my_canvas = Canvas(self, width=1000, height=600)
 
-        # Create the application's label
-        Label(
-            self,
-            text="Budget Spreadsheet Tracker",
-            font=("TkDefaultFont", 14),
-        ).grid(row=0)
+        self.my_canvas.create_image(0, 0, image=self.bg, anchor="nw")
+        self.my_canvas.pack(
+            fill="both", expand=True, padx=10, pady=10, ipadx=5, ipady=5, side="top"
+        )
 
-        # Buttons
-        buttons = Buttons()
-        buttons.grid(row=2, sticky="NSEW")
-        buttons.columnconfigure(2, weight=1)
-        buttons.rowconfigure(2, weight=1)
+
+class Application(tk.Tk):
+    """Application class for the Budget Spreadsheet Tracker application"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Create the ccanvas, and the background image
+        self.my_canvas = MyCanvas()
+        self.my_canvas.grid(row=0, column=0, padx=10, pady=10, sticky="nsew")
+        self.my_canvas.grid_columnconfigure(0, weight=1)
+
+        # Create the button structure
+        self.my_buttons = Buttons()
+        self.my_buttons.grid(
+            sticky="nsew",
+            columnspan=3,
+            rowspan=3,
+        )
 
 
 if __name__ == "__main__":
     app = Application()
+    app.title("Budget Spreadsheet Tracker")
+    app.configure(bg="white")
+    app.geometry("1100x800")
+    app.grid()
+
     app.mainloop()
