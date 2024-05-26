@@ -11,8 +11,9 @@
 ##############################################################################
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 import pandas as pd
 
 
@@ -31,7 +32,7 @@ class CSVReader:
         self.ten_highest_transactions = {}
 
     # Provide the path to the csv
-    def read_csv(self):
+    def read_csv(self, path_to_csv=None):
         """Reads the csv and stores it in a pandas dataframe"""
         if self.path_to_csv == "" or self.path_to_csv is None:
             # If no path is provided, use the default path
@@ -48,7 +49,7 @@ class CSVReader:
                 "country",
                 "address",
                 "description",
-                "category"
+                "category",
             ],
         )
         return self.csv_contents
@@ -111,13 +112,13 @@ class CSVReader:
 
     def get_category_sum(self):
         self.read_csv()
-        total_by_category = self.csv_contents.groupby('category', as_index=False)['amount'].sum()
+        total_by_category = self.csv_contents.groupby("category", as_index=False)[
+            "amount"
+        ].sum()
         return total_by_category
 
     def get_category_count(self):
         self.read_csv()
-        category_count = self.csv_contents.groupby('category', as_index=False).size()
-        category_count = category_count.rename(columns={'size':'count'})
+        category_count = self.csv_contents.groupby("category", as_index=False).size()
+        category_count = category_count.rename(columns={"size": "count"})
         return category_count
-
-

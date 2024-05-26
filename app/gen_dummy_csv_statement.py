@@ -15,7 +15,7 @@ from numpy import int64
 fake = Faker()
 
 # Number of transactions
-NUM_TRANSACTIONS = 65
+NUM_TRANSACTIONS = 1000
 
 # Generate random data
 data = {
@@ -35,7 +35,24 @@ data = {
         fake.street_address().rstrip(",").strip() for _ in range(NUM_TRANSACTIONS)
     ],
     "description": [fake.bs().rstrip(",").strip() for _ in range(NUM_TRANSACTIONS)],
-    "category": [fake.random_element(elements=('Food & Drink', 'Entertainment', 'Travel', 'Shopping', 'Personal', 'Bills & Utilities', 'Gas', 'Home', 'Groceries')).rstrip(",").strip() for _ in range(NUM_TRANSACTIONS)],
+    "category": [
+        fake.random_element(
+            elements=(
+                "Food & Drink",
+                "Entertainment",
+                "Travel",
+                "Shopping",
+                "Personal",
+                "Bills & Utilities",
+                "Gas",
+                "Home",
+                "Groceries",
+            )
+        )
+        .rstrip(",")
+        .strip()
+        for _ in range(NUM_TRANSACTIONS)
+    ],
 }
 
 # Create a DataFrame
@@ -43,4 +60,4 @@ df = pd.DataFrame(data)
 
 # Save to CSV
 df.to_csv("credit_card_statement.csv", index=False)
-print("Dummy credit card statement saved to 'dummy_credit_card_statement.csv'")
+print("Dummy credit card statement saved to 'credit_card_statement.csv'")
