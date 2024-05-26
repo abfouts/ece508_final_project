@@ -40,6 +40,8 @@ class Backend:
         self.chart_bottom = None
         self.buttons = None
         self.chart = None
+        self.category_sum = None
+        self.category_count = None
 
     def upload_csv_file(self):
         """Uploads a csv file"""
@@ -51,22 +53,25 @@ class Backend:
             self.chart_top.destroy()
             self.chart_bottom.destroy()
 
-        self.chart_top = PlotTop(self.balance_per_day, self.highest_transactions)
-        self.chart_bottom = PlotBottom(self.balance_per_day, self.highest_transactions)
+        #self.chart_top = PlotTop(self.balance_per_day, self.highest_transactions)
+        #self.chart_bottom = PlotBottom(self.balance_per_day, self.highest_transactions)
+
 
     def generate_report(self):
         """Generates a report"""
         self.csv_reader.read_csv()
         self.balance_per_day = self.get_balance_per_day()
         self.highest_transactions = self.get_ten_highest_transactions()
+        self.category_sum = self.get_category_sum()
+        self.category_count = self.get_category_count()
 
-        self.chart = PlotTop(self.balance_per_day, self.highest_transactions)
-        self.chart.grid(
+        self.chart_top = PlotTop(self.balance_per_day, self.highest_transactions)
+        self.chart_top.grid(
             row=0,
             column=0,
             sticky="nw",
         )
-        self.chart_bottom = PlotBottom(self.balance_per_day, self.highest_transactions)
+        self.chart_bottom = PlotBottom(self.category_sum, self.category_count)
         self.chart_bottom.grid(row=0, column=0)
 
     def get_balance_per_day(self):
@@ -89,6 +94,13 @@ class Backend:
         """Update the CSV path."""
         self.csv_path = new_path
 
+    def get_category_sum(self):
+        self.category_sum = self.csv_reader.get_category_sum()
+        return self.category_sum
+
+    def get_category_count(self):
+        self.category_count = self.csv_reader.get_category_count()
+        return self.category_count
 
 class PlotTop(Canvas):
     """Plot class for the Budget Spreadsheet Tracker application"""
@@ -169,13 +181,13 @@ class PlotBottom(Canvas):
         self.ax1 = self.figure1.add_subplot()
         self.bar1 = FigureCanvasTkAgg(self.figure1, self)
 
-        self.ax1.bar(transaction_df["date"], transaction_df["amount"])
-        self.ax1.set_title("10 Highest Transactions")
+        self.ax1.bar(transaction_df.iloc[:,0], transaction_df.iloc[:,1])
+        self.ax1.set_title("Total Number of Transactions Per Category")
         self.ax1.set_facecolor("#cfcfcf")
-        self.ax1.set_xlabel("Date")
-        self.ax1.set_ylabel("Amount in Dollars")
-        self.ax1.set_xticks(transaction_df["date"])
-        self.ax1.set_xticklabels(transaction_df["date"], rotation=90)
+        self.ax1.set_xlabel("Category")
+        self.ax1.set_ylabel("Count")
+        self.ax1.set_xticks(transaction_df.iloc[:, 0])
+        self.ax1.set_xticklabels(transaction_df.iloc[:, 0], rotation=40)
         self.bar1.get_tk_widget().pack(
             expand=False, side=tk.TOP, ipadx=60, ipady=60, anchor="e", fill="both"
         )
@@ -188,13 +200,15 @@ class PlotBottom(Canvas):
         self.ax2 = self.figure2.add_subplot()
         self.line2 = FigureCanvasTkAgg(self.figure2, self)
 
-        self.ax2.plot(balance_df["date"], balance_df["balance"], "b", label="Balance")
-        self.ax2.set_title("Balance in Dollars")
+        #self.ax2.plot(balance_df.iloc[:,0], balance_df.iloc[:,1], "b", label="Sum")
+        #self.ax2.plot(balance_df)
+        self.ax2.bar(balance_df.iloc[:,0], balance_df.iloc[:, 1])
+        self.ax2.set_title("Sum Spent Per Category")
         self.ax2.set_facecolor("#cfcfcf")
-        self.ax2.set_xlabel("Date")
+        self.ax2.set_xlabel("Category")
         self.ax2.set_ylabel("Dollars")
-        self.ax2.set_xticks(balance_df["date"])
-        self.ax2.set_xticklabels(balance_df["date"], rotation=90)
+        self.ax2.set_xticks(balance_df.iloc[:, 0])
+        self.ax2.set_xticklabels(balance_df.iloc[:,0], rotation=40)
         self.line2.get_tk_widget().pack(
             expand=False, side=tk.TOP, ipadx=60, ipady=60, anchor="e", fill="both"
         )

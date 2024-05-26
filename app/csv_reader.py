@@ -47,7 +47,8 @@ class CSVReader:
                 "reference_number",
                 "country",
                 "address",
-                "discription",
+                "description",
+                "category"
             ],
         )
         return self.csv_contents
@@ -108,6 +109,15 @@ class CSVReader:
         # Return the dictionary
         return self.balance_per_day
 
+    def get_category_sum(self):
+        self.read_csv()
+        total_by_category = self.csv_contents.groupby('category', as_index=False)['amount'].sum()
+        return total_by_category
 
-csv_reader = CSVReader("")
-print(csv_reader.get_balance_per_day())
+    def get_category_count(self):
+        self.read_csv()
+        category_count = self.csv_contents.groupby('category', as_index=False).size()
+        category_count = category_count.rename(columns={'size':'count'})
+        return category_count
+
+
