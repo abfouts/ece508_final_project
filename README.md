@@ -7,6 +7,14 @@ Abram Fouts, Niko Nikolov
 This project is written in Python and uses the pandas library for data manipulation and the Tkinter library for the
 graphical user interface.
 
+## Used Packages
+tkinter
+matplotlib
+pandas
+path
+os
+
+
 ## File Structure
 
 The project consists of the following Python files:
