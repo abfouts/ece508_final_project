@@ -14,6 +14,8 @@ pandas
 path
 os
 
+# Usage
+py / python / python3 gui.py will be used to run the application
 
 ## File Structure
 
