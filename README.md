@@ -8,14 +8,14 @@ This project is written in Python and uses the pandas library for data manipulat
 graphical user interface.
 
 ## Used Packages
-tkinter
+tk
 matplotlib
 pandas
 path
 os
 
 # Usage
-py / python / python3 gui.py will be used to run the application
+"{python executable} gui.py" will be used to run the application
 
 ## File Structure
 
