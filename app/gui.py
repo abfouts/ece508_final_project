@@ -322,20 +322,22 @@ class Buttons(Button):
             self,
             text="Reset",
             command=self.backend.reset,
-            width=20,
+            width=30,
             bg="#ff0000",
             activebackground="#e23a08",
             fg="black",
             font=("Roboto", 12),
             borderwidth=2,
         )
-        self.reset_button.grid(row=3, column=1, padx=10, sticky="nsew", pady=5, ipady=5)
+        self.reset_button.grid(
+            row=3, column=1, padx=10, sticky="nsew", pady=5, ipady=5, ipadx=20
+        )
 
         self.generate_report_button = Button(
             self,
             text="Generate Report",
             command=self.backend.generate_report,
-            width=25,
+            width=30,
             activeforeground="black",
             bg="#23a08e",
             activebackground="#a3ffb4",
@@ -349,7 +351,7 @@ class Buttons(Button):
             padx=10,
             sticky="we",
             pady=5,
-            ipadx=120,
+            ipadx=100,
             ipady=5,
             rowspan=3,
             columnspan=3,
