@@ -71,13 +71,13 @@ class Backend:
 
         self.chart_top = PlotTop(self.balance_per_day, self.highest_transactions)
         self.chart_top.grid(
-            row=0,
-            column=0,
-            sticky="nw",
+            row=0, column=0, sticky="n", padx=10, pady=10, ipadx=10, ipady=10
         )
+
         self.chart_bottom = PlotBottom(self.category_sum, self.category_count)
-        self.chart_bottom.grid_rowconfigure(0, weight=1)
-        self.chart_bottom.grid(row=0, column=0, sticky="se", ipady=25)
+        self.chart_bottom.grid(
+            row=0, column=0, sticky="s", padx=10, pady=10, ipadx=10, ipady=10
+        )
 
         return self.chart_top, self.chart_bottom
 
@@ -150,7 +150,7 @@ class PlotTop(Canvas):
         self.ax1.tick_params(
             axis="x", labelcolor="tab:red", labelrotation=45, labelsize=16
         )
-        self.ax1.tick_params(axis="y", color="tab:green", size=25, width=3)
+        self.ax1.tick_params(axis="y", color="tab:green", size=12, width=3)
         self.ax1.set_title("10 Highest Purchases")
         self.ax1.set_facecolor("#00ffff")
 
@@ -161,7 +161,7 @@ class PlotTop(Canvas):
         self.ax1.set_xticklabels(transaction_df["date"], rotation=90)
 
         self.bar1.get_tk_widget().pack(
-            expand=False, side=tk.TOP, ipadx=60, ipady=92, anchor="w", fill="both"
+            expand=True, side=tk.LEFT, anchor="w", fill="both"
         )
 
     def create_figure2(self):
@@ -180,11 +180,11 @@ class PlotTop(Canvas):
         self.ax2.set_facecolor("#e6e600")
         self.ax2.set_xlabel("Date")
         self.ax2.set_ylabel("Dollars")
-        self.ax2.tick_params(axis="both", which="minor", labelsize=10)
+        self.ax2.tick_params(axis="both", which="minor", labelsize=12)
         self.ax2.tick_params(
-            axis="x", labelcolor="tab:red", labelrotation=45, labelsize=16
+            axis="x", labelcolor="tab:red", labelrotation=45, labelsize=12
         )
-        self.ax2.tick_params(axis="y", color="tab:green", size=25, width=3)
+        self.ax2.tick_params(axis="y", color="tab:green", size=12, width=3)
         self.ax2.yaxis.set_major_formatter("${x:1.2f}")
 
         self.ax2.yaxis.set_tick_params(
@@ -197,7 +197,7 @@ class PlotTop(Canvas):
         )
 
         self.line2.get_tk_widget().pack(
-            expand=False, side=tk.TOP, ipadx=60, ipady=93, anchor="w", fill="both"
+            expand=False, side=tk.LEFT, anchor="w", fill="both"
         )
 
 
@@ -221,7 +221,7 @@ class PlotBottom(Canvas):
         """Creates the first figure"""
         # Create figure 1
         transaction_df = pd.DataFrame(self.transactions)
-        self.figure1 = Figure(figsize=(6, 4), dpi=60)
+        self.figure1 = Figure(figsize=(6, 4), dpi=65)
         self.ax1 = self.figure1.add_subplot()
 
         y_values = transaction_df.iloc[:, 1]
@@ -244,20 +244,23 @@ class PlotBottom(Canvas):
         self.ax1.set_facecolor("#f7d7e7")
         self.ax1.set_xlabel("Category")
         self.ax1.set_ylabel("Count")
-        self.ax1.tick_params(axis="both", which="minor", labelsize=10)
+        self.ax1.tick_params(axis="both", which="minor", labelsize=12)
 
         self.ax1.set_xticks(transaction_df.iloc[:, 0])
         self.ax1.set_xticklabels(transaction_df.iloc[:, 0], rotation=40)
 
         self.bar1.get_tk_widget().pack(
-            expand=True, side=tk.TOP, ipadx=70, ipady=90, anchor="e", fill="both"
+            expand=True,
+            side=tk.LEFT,
+            fill="both",
+            anchor="n",
         )
 
     def create_figure2(self):
         """Creates the second figure"""
 
         balance_df = pd.DataFrame(self.balance)
-        self.figure2 = Figure(figsize=(6, 4), dpi=60)
+        self.figure2 = Figure(figsize=(6, 4), dpi=65)
         self.ax2 = self.figure2.add_subplot()
         self.line2 = FigureCanvasTkAgg(self.figure2, self)
         self.figure2.set_layout_engine("compressed")
@@ -278,15 +281,13 @@ class PlotBottom(Canvas):
         self.ax2.set_facecolor("#e6e0e3")
         self.ax2.set_xlabel("Category")
         self.ax2.set_ylabel("Dollars")
-        self.ax2.tick_params(axis="both", which="minor", labelsize=10)
+        self.ax2.tick_params(axis="both", which="minor", labelsize=12)
         self.ax2.set_xticks(balance_df.iloc[:, 0])
         self.ax2.set_xticklabels(balance_df.iloc[:, 0], rotation=40)
         self.line2.get_tk_widget().pack(
             expand=True,
-            side=tk.TOP,
-            ipadx=70,
-            ipady=90,
-            anchor="e",
+            side=tk.LEFT,
+            anchor="n",
             fill="both",
         )
 
@@ -309,12 +310,12 @@ class Buttons(Button):
             bg="#e2ff00",
             fg="black",
             activeforeground="black",
-            font=("Roboto", 14),
+            font=("Roboto", 12),
             borderwidth=2,
         )
 
         self.upload_csv_button.grid(
-            row=3, column=0, sticky="nsew", padx=10, pady=5, ipadx=50, ipady=5
+            row=3, column=0, sticky="nsew", padx=10, pady=5, ipady=5
         )
 
         self.reset_button = Button(
@@ -325,23 +326,21 @@ class Buttons(Button):
             bg="#ff0000",
             activebackground="#e23a08",
             fg="black",
-            font=("Roboto", 14),
+            font=("Roboto", 12),
             borderwidth=2,
         )
-        self.reset_button.grid(
-            row=3, column=1, padx=10, sticky="nsew", pady=5, ipadx=50, ipady=5
-        )
+        self.reset_button.grid(row=3, column=1, padx=10, sticky="nsew", pady=5, ipady=5)
 
         self.generate_report_button = Button(
             self,
             text="Generate Report",
             command=self.backend.generate_report,
-            width=20,
+            width=25,
             activeforeground="black",
             bg="#23a08e",
             activebackground="#a3ffb4",
             fg="black",
-            font=("Roboto", 14),
+            font=("Roboto", 12),
             borderwidth=2,
         )
         self.generate_report_button.grid(
@@ -350,7 +349,7 @@ class Buttons(Button):
             padx=10,
             sticky="we",
             pady=5,
-            ipadx=50,
+            ipadx=120,
             ipady=5,
             rowspan=3,
             columnspan=3,
@@ -366,11 +365,17 @@ class MyCanvas(Canvas):
         super().__init__(*args, **kwargs)
 
         self.bg = tk.PhotoImage(file="Designer.png")
-        self.my_canvas = Canvas(self, width=950, height=650)
+        self.my_canvas = Canvas(self, width=1000, height=600)
 
         self.my_canvas.create_image(0, 0, image=self.bg, anchor="nw")
         self.my_canvas.pack(
-            fill="both", expand=True, padx=10, pady=10, ipadx=10, ipady=10, side="top"
+            fill="both",
+            expand=True,
+            padx=10,
+            pady=10,
+            ipadx=5,
+            ipady=5,
+            side="top",
         )
         self.my_canvas.pack_configure(fill="both", expand=True)
 
@@ -396,7 +401,7 @@ if __name__ == "__main__":
     app = Application()
     app.title("Budget Spreadsheet Tracker")
     app.configure(bg="white")
-    app.geometry("900x750")
+    app.geometry("1000x700")
     app.grid()
 
     app.mainloop()
