@@ -8,11 +8,11 @@ This project is written in Python and uses the pandas library for data manipulat
 graphical user interface.
 
 ## Used Packages
-tk
-matplotlib
-pandas
-path
-os
+- `tk`
+- `matplotlib`
+- `pandas`
+- `path`
+- `os`
 
 # Usage
 "{python executable} gui.py" will be used to run the application
